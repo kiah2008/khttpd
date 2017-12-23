@@ -9,6 +9,6 @@
 #define KHTTPD_INCLUDE_LOG_H_
 #include <klog.h>
 
-#define LOG_TAG "khttpd"
+#define LOG_TAG "remoteproxy"
 
 #endif /* KHTTPD_INCLUDE_LOG_H_ */

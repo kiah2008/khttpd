@@ -16,7 +16,7 @@
 /*
  * httpd.c
  *
- *  Created on: 2017Äê12ÔÂ22ÈÕ
+ *  Created on: 2017/12/22
  *      Author: Think
  */
 #include <stdio.h>
@@ -78,9 +78,9 @@ void* accept_request(void* param) {
 
 	i = 0;
 	j = 0;
-	while (!ISspace(buf[j]) && (i < sizeof(method) - 1)) //Ð¡ÓÚmethod-1ÊÇÒòÎª×îºóÒ»Î»Òª·Å\0
+	while (!ISspace(buf[j]) && (i < sizeof(method) - 1)) //Ð¡ï¿½ï¿½method-1ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ò»Î»Òªï¿½ï¿½\0
 	{
-		method[i] = buf[j]; //»ñÈ¡ÇëÇó·½·¨·ÅÈëmethod
+		method[i] = buf[j]; //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ó·½·ï¿½ï¿½ï¿½ï¿½ï¿½method
 		i++;
 		j++;
 	}
@@ -226,7 +226,7 @@ void error_die(const char *sc) {
 }
 
 /**********************************************************************/
-/* Ö´ÐÐÒ»¸öcgi½Å±¾,ÉèÖÃÒ»Ð©»·¾³±äÁ¿
+/* Ö´ï¿½ï¿½Ò»ï¿½ï¿½cgiï¿½Å±ï¿½,ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
  * Parameters: connfd   socket descriptor
  *             path     to the CGI script */
@@ -234,8 +234,8 @@ void error_die(const char *sc) {
 void execute_cgi(int connfd, const char *path, const char *method,
 		const char *query_string) {
 	char buf[1024];
-	int cgi_output[2]; //ÖØ¶¨ÏòÊä³öµÄ¹ÜµÀ
-	int cgi_input[2]; //ÖØ¶¨ÏòÊäÈëµÄ¹ÜµÀ
+	int cgi_output[2];
+	int cgi_input[2];
 	pid_t pid;
 	int status;
 	int i;
@@ -251,18 +251,18 @@ void execute_cgi(int connfd, const char *path, const char *method,
 		while ((numchars > 0) && strcmp("\n", buf)) /* read & discard headers */
 			numchars = get_line(connfd, buf, sizeof(buf));
 	} else {
-		//Ö»ÓÐ POST ·½·¨²Å¼ÌÐø¶ÁÄÚÈÝ
+		//Ö»ï¿½ï¿½ POST ï¿½ï¿½ï¿½ï¿½ï¿½Å¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		numchars = get_line(connfd, buf, sizeof(buf));
-		//Õâ¸öÑ­»·µÄÄ¿µÄÊÇ¶Á³öÖ¸Ê¾ body ³¤¶È´óÐ¡µÄ²ÎÊý£¬²¢¼ÇÂ¼ body µÄ³¤¶È´óÐ¡¡£ÆäÓàµÄ header ÀïÃæµÄ²ÎÊýÒ»ÂÉºöÂÔ
-		//×¢ÒâÕâÀïÖ»¶ÁÍê header µÄÄÚÈÝ£¬body µÄÄÚÈÝÃ»ÓÐ¶Á
+		//ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½Ö¸Ê¾ body ï¿½ï¿½ï¿½È´ï¿½Ð¡ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ body ï¿½Ä³ï¿½ï¿½È´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ header ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½Ò»ï¿½Éºï¿½ï¿½ï¿½
+		//×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ header ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½body ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¶ï¿½
 		while ((numchars > 0) && strcmp("\n", buf)) {
 			buf[15] = '\0';
 			if (strcasecmp(buf, "Content-Length:") == 0)
-				content_length = atoi(&(buf[16])); //¼ÇÂ¼ body µÄ³¤¶È´óÐ¡
+				content_length = atoi(&(buf[16])); //ï¿½ï¿½Â¼ body ï¿½Ä³ï¿½ï¿½È´ï¿½Ð¡
 			numchars = get_line(connfd, buf, sizeof(buf));
 		}
 
-		//Èç¹û http ÇëÇóµÄ header Ã»ÓÐÖ¸Ê¾ body ³¤¶È´óÐ¡µÄ²ÎÊý£¬Ôò±¨´í·µ»Ø
+		//ï¿½ï¿½ï¿½ http ï¿½ï¿½ï¿½ï¿½ï¿½ header Ã»ï¿½ï¿½Ö¸Ê¾ body ï¿½ï¿½ï¿½È´ï¿½Ð¡ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò±¨´ï¿½ï¿½ï¿½
 		if (content_length == -1) {
 			bad_request(connfd);
 			return;
@@ -297,13 +297,13 @@ void execute_cgi(int connfd, const char *path, const char *method,
 		close(cgi_output[0]);
 		close(cgi_input[1]);
 
-		//¹¹ÔìÒ»¸ö»·¾³±äÁ¿
+		//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		sprintf(meth_env, "REQUEST_METHOD=%s", method);
 
-		//½«Õâ¸ö»·¾³±äÁ¿¼Ó½ø×Ó½ø³ÌµÄÔËÐÐ»·¾³ÖÐ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ó½ï¿½ï¿½Ìµï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½
 		putenv(meth_env);
 
-		//¸ù¾Ýhttp ÇëÇóµÄ²»Í¬·½·¨£¬¹¹Ôì²¢´æ´¢²»Í¬µÄ»·¾³±äÁ¿
+		//ï¿½ï¿½ï¿½ï¿½http ï¿½ï¿½ï¿½ï¿½Ä²ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì²¢ï¿½æ´¢ï¿½ï¿½Í¬ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (strcasecmp(method, "GET") == 0) {
 			sprintf(query_env, "QUERY_STRING=%s", query_string);
 			putenv(query_env);
@@ -338,16 +338,16 @@ void execute_cgi(int connfd, const char *path, const char *method,
 }
 
 /**********************************************************************/
-/* ´Ósocket¶ÁÈ¡Ò»ÐÐ¡£
- * Èç¹ûÐÐÒÔ»»ÐÐ(\n)»òÕß»Ø³µ(\r)»òÕßCRLF(\r\n)×öÎª½áÊø,¾ÍÊ¹ÓÃ'\0'Í£Ö¹×Ö·û´®¶ÁÈ¡
- * Èç¹ûbuffer¶ÁÈ¡Íê¶¼Ã»ÓÐ·¢ÏÖ»»ÐÐ·û,Ê¹ÓÃ'\0'½áÊø×Ö·û´®
- * Èç¹ûÉÏ±ßÈý¸öÈÎÒâÒ»¸öÐÐÖÕÖ¹·û±»¶Á³ö,¶¼»á±»Ìæ»»Îª\n,²¢ÇÒÔÚÄ©Î²²¹³ä'\0'
- * ÒâË¼¾ÍÊÇ²»¹Ü»»ÐÐ·ûÊÇ\r»¹ÊÇ\n»¹ÊÇ\r\n£¬¶¼»á±»Ìæ»»Îª\n\0
+/* ï¿½ï¿½socketï¿½ï¿½È¡Ò»ï¿½Ð¡ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½(\n)ï¿½ï¿½ï¿½ß»Ø³ï¿½(\r)ï¿½ï¿½ï¿½ï¿½CRLF(\r\n)ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½Ê¹ï¿½ï¿½'\0'Í£Ö¹ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½È¡
+ * ï¿½ï¿½ï¿½bufferï¿½ï¿½È¡ï¿½ê¶¼Ã»ï¿½Ð·ï¿½ï¿½Ö»ï¿½ï¿½Ð·ï¿½,Ê¹ï¿½ï¿½'\0'ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½á±»ï¿½æ»»Îª\n,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä©Î²ï¿½ï¿½ï¿½ï¿½'\0'
+ * ï¿½ï¿½Ë¼ï¿½ï¿½ï¿½Ç²ï¿½ï¿½Ü»ï¿½ï¿½Ð·ï¿½ï¿½ï¿½\rï¿½ï¿½ï¿½ï¿½\nï¿½ï¿½ï¿½ï¿½\r\nï¿½ï¿½ï¿½ï¿½ï¿½á±»ï¿½æ»»Îª\n\0
  *
- * ¹ØÓÚ»Ø³µºÍ»»ÐÐ£º
- * '\r'ÊÇ»Ø³µ£¬Ê¹¹â±êµ½ÐÐÊ×£¬£¨carriage return£©
- * '\n'ÊÇ»»ÐÐ£¬Ê¹¹â±êÏÂÒÆÒ»¸ñ£¬£¨line feed / newline£©
- * '\r\n'¾ÍÊÇCRLFÀ²
+ * ï¿½ï¿½ï¿½Ú»Ø³ï¿½ï¿½Í»ï¿½ï¿½Ð£ï¿½
+ * '\r'ï¿½Ç»Ø³ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½êµ½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½carriage returnï¿½ï¿½
+ * '\n'ï¿½Ç»ï¿½ï¿½Ð£ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ñ£¬£ï¿½line feed / newlineï¿½ï¿½
+ * '\r\n'ï¿½ï¿½ï¿½ï¿½CRLFï¿½ï¿½
  *
  * Parameters: the socket descriptor
  *             the buffer to save the data in
@@ -356,7 +356,7 @@ void execute_cgi(int connfd, const char *path, const char *method,
 /**********************************************************************/
 int get_line(int sock, char *buf, int size) {
 	int i = 0;
-	char c = '\0'; //²¹³äµ½½áÎ²µÄ×Ö·û
+	char c = '\0'; //ï¿½ï¿½ï¿½äµ½ï¿½ï¿½Î²ï¿½ï¿½ï¿½Ö·ï¿½
 	int n;
 
 	while ((i < size - 1) && (c != '\n')) {
@@ -524,7 +524,7 @@ int startup(u_short *port) {
 }
 
 /**********************************************************************/
-/* Í¨ÖªconnfdÇëÇóµÄweb·½·¨Ã»ÓÐÊµÏÖ                                    */
+/* Í¨Öªconnfdï¿½ï¿½ï¿½ï¿½ï¿½webï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Êµï¿½ï¿½                                    */
 /**********************************************************************/
 void unimplemented(int connfd) {
 	char buf[1024];

@@ -32,5 +32,8 @@ $(LOCAL_MODULE) : $(LOCAL_OBJS)
 %.o : %.cpp
 	$(CXX) -c $< $(CXXFLAGS) ${LOCAL_INCLUDES} -o $@
 
+install:
+	cp ${LOCAL_MODULE} ../${OUT_DIR}/
+
 clean:
 	rm -rf $(LOCAL_MODULE) $(LOCAL_OBJS)
