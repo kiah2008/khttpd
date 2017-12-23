@@ -35,8 +35,9 @@
 
 #include <log.h>
 #include <config.h>
+#include <ktypedef.h>
 
-#define LOG_TAG "httpd"
+#define LOG_TAG "khttpd"
 
 #define ISspace(x) isspace((int)(x))
 
@@ -44,7 +45,7 @@
 
 void* accept_request(void* param);
 void bad_request(int);
-void cat(int, FILE *);
+void dump_file(int, FILE *, enum_data_type type);
 void cannot_execute(int);
 void error_die(const char *);
 void execute_cgi(int, const char *, const char *, const char *);
@@ -127,6 +128,7 @@ void* accept_request(void* param) {
 		strcat(path, "index.html");
 	}
 
+	LOGD("request file %s", path);
 	if (stat(path, &st) == -1) {
 		abandon_remaining(connfd);
 		not_found(connfd);
@@ -175,14 +177,23 @@ void bad_request(int connfd) {
  * Parameters: the connfd socket descriptor
  *             FILE pointer for the file to cat */
 /**********************************************************************/
-void cat(int connfd, FILE *resource) {
+void dump_file(int connfd, FILE *resource, enum_data_type type) {
 	char buf[1024];
-
-	//从文件描述符中读取指定内容
-	fgets(buf, sizeof(buf), resource);
-	while (!feof(resource)) {
-		send(connfd, buf, strlen(buf), 0);
+	size_t readsize = 0;
+	if (type == DATA_BINARY) {
+		readsize = fread(buf, 1, sizeof(buf), resource);
+		LOGD("read size %d", readsize);
+		while (!feof(resource) || readsize > 0) {
+			send(connfd, buf, readsize, 0);
+			readsize = fread(buf, 1, sizeof(buf), resource);
+			LOGD("read size %d", readsize);
+		}
+	} else {
 		fgets(buf, sizeof(buf), resource);
+		while (!feof(resource)) {
+			send(connfd, buf, strlen(buf), 0);
+			fgets(buf, sizeof(buf), resource);
+		}
 	}
 }
 
@@ -467,7 +478,7 @@ void serve_file(int connfd, const char *filename) {
 		not_found(connfd);
 	} else {
 		headers(connfd, filename);
-		cat(connfd, resource);
+		dump_file(connfd, resource, DATA_BINARY);
 	}
 
 	fclose(resource);
@@ -567,5 +578,6 @@ int main(void) {
 	}
 	close(listenfd);
 	CLOSELOG();
+	LOGD("exiting");
 	return (0);
 }

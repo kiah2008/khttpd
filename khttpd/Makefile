@@ -4,9 +4,11 @@ CXX := g++
 LOCAL_PATH := .
 
 LOCAL_MODULE := khttpd
-LOCAL_DIRS := ${LOCAL_PATH}/src
+LOCAL_DIRS := ${LOCAL_PATH}/src ${LOCAL_PATH}/include
 
-LOCAL_SRCEXTS = .c .C .cc .cpp .CPP .c++ .cxx .cp
+LOCAL_SRCEXTS = .c .cpp
+
+LOCAL_HEADERS := $(foreach d,$(LOCAL_DIRS), $(wildcard $(addprefix $(d)/*, .h)))
 
 LOCAL_SRCS := $(foreach d,$(LOCAL_DIRS), $(wildcard $(addprefix $(d)/*,$(LOCAL_SRCEXTS))))
 
@@ -23,7 +25,7 @@ CXXFLAGS := -g -Wall -O0
 
 all:$(LOCAL_MODULE)
 
-$(LOCAL_MODULE) : $(LOCAL_OBJS)
+$(LOCAL_MODULE) : $(LOCAL_OBJS) $(LOCAL_HEADERS)
 	$(CC) $^ -o $@ $(LOCAL_INCLUDES) $(LD_FLAGS)
 
 %.o : %.c
