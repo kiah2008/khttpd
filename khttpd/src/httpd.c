@@ -548,7 +548,7 @@ int main(void) {
 	char client_ip[16] = { 0 };
 
 	pthread_t newthread;
-
+	OPENLOG();
 	listenfd = startup(&port);
 	LOGD("httpd running on port %d\n", port);
 
@@ -566,6 +566,6 @@ int main(void) {
 			perror("pthread_create");
 	}
 	close(listenfd);
-
+	CLOSELOG();
 	return (0);
 }
