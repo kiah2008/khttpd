@@ -1,8 +1,9 @@
 BUILDDIRS := \
-	external/libcups-2.2.6/ \
 	khttpd/ \
 	remoteproxy/ \
 	simpleclient/
+
+#	external/libcups-2.2.6/ \
 
 OUT_DIR	:=	out
 export LDFLAGS:= -Lout

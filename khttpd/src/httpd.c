@@ -53,7 +53,7 @@ int get_line(int, char *, int);
 void headers(int, const char *);
 void not_found(int);
 void serve_file(int, const char *);
-int startup(u_short *);
+int startListenSocket(u_short *);
 void unimplemented(int);
 void abandon_remaining(int);
 
@@ -488,7 +488,7 @@ void serve_file(int connfd, const char *filename) {
  /* Parameters: pointer to variable containing the port to connect on
  * Returns: the socket */
 /**********************************************************************/
-int startup(u_short *port) {
+int startListenSocket(u_short *port) {
 	int httpd = 0;
 	struct sockaddr_in name;
 
@@ -520,7 +520,7 @@ int startup(u_short *port) {
 
 	if (listen(httpd, KMAX_CONNECTIONS) < 0)
 		error_die("listen");
-	return (httpd);
+	return httpd;
 }
 
 /**********************************************************************/
@@ -560,7 +560,7 @@ int main(void) {
 
 	pthread_t newthread;
 	OPENLOG();
-	listenfd = startup(&port);
+	listenfd = startListenSocket(&port);
 	LOGD("httpd running on port %d\n", port);
 
 	while (1) {

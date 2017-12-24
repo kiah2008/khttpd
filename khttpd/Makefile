@@ -17,7 +17,7 @@ LOCAL_OBJS := $(addsuffix .o, $(basename $(LOCAL_SRCS)))
 LOCAL_INCLUDES = -I./include \
 	-I../include \
 
-LD_FLAGS := ${LDFLAGS}-lpthread
+LD_FLAGS := ${LDFLAGS} -lpthread
 
 CCFLAGS := -g -Wall -O0
 CXXFLAGS := -g -Wall -O0
