@@ -1,0 +1,190 @@
+#
+# Programs...
+#
+
+AR		=	/usr/bin/ar
+AWK		=	gawk
+CC		=	 cc
+CHMOD		=	/usr/bin/chmod
+CXX		=	 c++
+DSO		=	$(CC)
+DSOXX		=	$(CXX)
+GZIP		=	/usr/bin/gzip
+INSTALL		=
+LD		=	/usr/bin/ld
+LD_CC		=	$(CC)
+LD_CXX		=	$(CXX)
+LIBTOOL		=	
+LN		=	/usr/bin/ln -sf
+MKDIR           =       /usr/bin/mkdir -p
+MV		=	/usr/bin/mv
+RANLIB		=	ranlib
+RM		=	/usr/bin/rm -f
+RMDIR		=	/usr/bin/rmdir
+SED		=	/usr/bin/sed
+SHELL		=	/bin/sh
+
+#
+# Installation programs...
+#
+
+INSTALL_BIN	=	 $(INSTALL) -c -m 555 -s
+INSTALL_COMPDATA =	$(INSTALL) -c -m 444 
+INSTALL_CONFIG	=	$(INSTALL) -c -m 640
+INSTALL_DATA	=	$(INSTALL) -c -m 444
+INSTALL_DIR	=	$(INSTALL) -d
+INSTALL_LIB	=	 $(INSTALL) -c -m 555 -s
+INSTALL_MAN	=	$(INSTALL) -c -m 444
+INSTALL_SCRIPT	=	$(INSTALL) -c -m 555
+
+#
+# Default user, group, and system groups for the scheduler...
+#
+
+KUSER	=	nobody
+KGROUP	=	nobody
+KSYSTEM_GROUPS =	
+KPRIMARY_SYSTEM_GROUP =	
+
+#
+# Default permissions...
+#
+
+KCONFIG_FILE_PERM = 640
+KCUPSD_FILE_PERM = 500
+KLOG_FILE_PERM = 644
+
+#
+# Cross-compilation support: "local" target is used for any tools that are
+# built and run locally.
+#
+
+LOCAL_MODULE     = local
+
+#
+# Install static libraries?
+#
+
+INSTALLSTATIC	=	
+
+#
+# Program options...
+#
+# ARCHFLAGS     Defines the default architecture build options.
+# OPTIM         Defines the common compiler optimization/debugging options
+#               for all architectures.
+# OPTIONS       Defines other compile-time options (currently only -DDEBUG
+#               for extra debug info)
+#
+
+ALL_CFLAGS	=	
+ALL_CXXFLAGS =	
+ARCHFLAGS	=
+OPTIM =	
+ARFLAGS		=	crvs
+BACKLIBS	=	
+BUILDDIRS	= 
+CFLAGS		=	 
+COMMONLIBS	=	-lpthread 
+CXXFLAGS	=	 
+CXXLIBS		=	
+LDFLAGS		= -fPIE -pie $(OPTIM)
+LIBS		=	$(COMMONLIBS)
+ONDEMANDFLAGS	=	
+ONDEMANDLIBS	=	
+OPTIM		=	-Wall -Wno-format-y2k -Wunused -fPIC -Os -g -fstack-protector -Wno-unused-result -Wsign-conversion -Wno-tautological-compare -Wno-format-truncation
+OPTIONS		=
+
+#
+# Directories...
+#
+# The first section uses the GNU names (which are *extremely*
+# difficult to find in a makefile because they are lowercase...)
+# We have to define these first because autoconf uses ${prefix}
+# and ${exec_prefix} for most of the other directories...
+#
+# The "datarootdir" variable may not get defined if you are using
+# a version of autoconf prior to 2.60.
+#
+# This is immediately followed by definition in ALL CAPS for the
+# needed directories...
+#
+
+bindir		=	/usr/bin
+datadir		=	/usr/share
+datarootdir	=	/usr/share
+exec_prefix	=	/usr
+includedir	=	/usr/include
+infodir		=	${datarootdir}/info
+libdir		=	${exec_prefix}/lib
+libexecdir	=	${exec_prefix}/libexec
+localstatedir	=	/var
+mandir		=	/usr/man
+oldincludedir	=	/usr/include
+prefix		=	/
+privateinclude	=	
+sbindir		=	/usr/sbin
+sharedstatedir	=	/usr/com
+srcdir		=	.
+sysconfdir	=	/etc
+top_srcdir	=	.
+
+OUT_DIR	=	out
+#$(DSTROOT)
+
+AMANDIR		=	$(OUT_DIR)/usr/man
+BINDIR		=	$(OUT_DIR)/usr/bin
+BUNDLEDIR	=	
+CACHEDIR	=	$(OUT_DIR)/var/cache/cups
+DATADIR		=	$(OUT_DIR)/usr/share/cups
+ICONDIR		=	/usr/share/icons
+INCLUDEDIR	=	$(OUT_DIR)$(includedir)
+LIBDIR		=	$(OUT_DIR)$(libdir)
+LOCALEDIR	= 	$(OUT_DIR)/usr/lib/locale
+LOGDIR		= 	$(OUT_DIR)/var/log/cups
+MANDIR		=	$(OUT_DIR)/usr/man
+MENUDIR		=	/usr/share/applications
+PMANDIR		=	$(OUT_DIR)/usr/man
+PRIVATEINCLUDE	=	$(OUT_DIR)
+RCLEVELS	=	2 3 5
+RCSTART		=	99
+RCSTOP		=	00
+REQUESTS	= 	$(OUT_DIR)/var/spool/cups
+SBINDIR		=	$(OUT_DIR)/usr/sbin
+
+MAN1EXT		=	1
+MAN5EXT		=	5
+MAN7EXT		=	7
+MAN8EXT		=	8
+MAN8DIR		=	8
+
+
+
+#
+# Rules...
+#
+
+.SILENT:
+.SUFFIXES:	.1 .1.gz .1m .1m.gz .3 .3.gz .5 .5.gz .7 .7.gz .8 .8.gz .a .c .cxx .h .man .o .gz .cpp
+
+.c.o:
+	echo Compiling $<...
+	$(CC) $(ARCHFLAGS) $(OPTIM) $(ALL_CFLAGS) -c -o $@ $<
+
+.cxx.o:
+	echo Compiling $<...
+	$(CXX) $(ARCHFLAGS) $(OPTIM) $(ALL_CXXFLAGS) -c -o $@ $<
+
+.cpp.o:
+	echo Compiling $<...
+	$(CXX) $(ARCHFLAGS) $(OPTIM) $(ALL_CXXFLAGS) -c -o $@ $<
+	
+.man.1 .man.1m .man.3 .man.5 .man.7 .man.8:
+	echo Linking $<...
+	$(RM) $@
+	$(LN) $< $@
+
+.man.1.gz .man.1m.gz .man.3.gz .man.5.gz .man.7.gz .man.8.gz .man.gz:
+	echo -n Compressing $<...
+	$(RM) $@
+	gzip -v9 <$< >$@

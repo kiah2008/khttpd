@@ -17,7 +17,7 @@ LOCAL_OBJS := $(addsuffix .o, $(basename $(LOCAL_SRCS)))
 LOCAL_INCLUDES = -I./include \
 	-I../include \
 
-LD_FLAGS := -lpthread
+LD_FLAGS := ${LDFLAGS}-lpthread
 
 CCFLAGS := -g -Wall -O0
 CXXFLAGS := -g -Wall -O0
@@ -36,8 +36,8 @@ $(LOCAL_MODULE) : $(LOCAL_OBJS) $(LOCAL_HEADERS)
 	$(CXX) -c $< $(CXXFLAGS) ${LOCAL_INCLUDES} -o $@
 
 install:
-	cp ${LOCAL_MODULE} ../${OUT_DIR}/
-	cp -R htdocs ../${OUT_DIR}/
+	cp ${LOCAL_MODULE} ${OUT_DIR}/
+	cp -R htdocs ${OUT_DIR}/
 
 clean:
 	rm -rf $(LOCAL_MODULE) $(LOCAL_OBJS)
