@@ -25,6 +25,8 @@ typedef struct SocketListenParam {
 #define SOCKETID2NAME(id) (id== SOCKET_STAT?SOCK_STAT_NAME:SOCK_DATA_NAME)
 #define SOCK_STAT_NAME "SOCKET_STAT"
 #define SOCK_DATA_NAME "SOCKET_DATA"
-extern int event_init();
+
+int event_init(void* (*stat_handler)(void*), void*(*data_handler)(void*));
+
 
 #endif /* EVENT_H_ */

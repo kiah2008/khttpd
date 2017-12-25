@@ -19,15 +19,13 @@
 #define KPORT1 8124
 #define KPORT2 8125
 
-static void* event_handler(void* param);
 static SocketListenParam socketStatParam = { SOCKET_STAT, -1, KPORT1,
-		event_handler, 0, 0 };
+		NULL, 0, 0 };
 static pthread_mutex_t s_stat_param_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_stat_thread_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t s_stat_cond = PTHREAD_COND_INITIALIZER;
 static SocketListenParam socketDataParam = { SOCKET_DATA, -1, KPORT2,
-		event_handler, 0, 0 };
-;
+		NULL, 0, 0 };
 static pthread_mutex_t s_data_param_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t s_data_thread_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t s_data_cond = PTHREAD_COND_INITIALIZER;
@@ -35,13 +33,14 @@ static SocketListenParam* socketListParams[SOCKET_MAX] = { &socketStatParam,
 		&socketDataParam };
 
 static void* startEventLoop(void* param);
+static void* event_handler(void* param);
 
-int event_init() {
+int event_init(void* (*stat_handler)(void*), void*(*data_handler)(void*)) {
 	int i = 0;
-	for (i = 0; i < SOCKET_MAX; i++) {
-		startListen(socketListParams[i]);
-	}
-
+	socketListParams[SOCKET_STAT]->eventHandler = stat_handler;
+	startListen(socketListParams[SOCKET_STAT]);
+	socketListParams[SOCKET_DATA]->eventHandler = data_handler;
+	startListen(socketListParams[SOCKET_DATA]);
 	return 0;
 }
 
@@ -160,10 +159,18 @@ void* event_handler(void* param) {
 	SocketListenParam* socketParam = (SocketListenParam*) param;
 	pthread_cond_t* cond =
 			socketParam->soc_type == SOCKET_STAT ? &s_stat_cond : &s_data_cond;
+	pthread_mutex_t* socket_mutex =
+			socketParam->soc_type == SOCKET_STAT ?
+					&s_stat_param_mutex : &s_data_param_mutex;
+	pthread_mutex_lock(socket_mutex);
+	//TODO need lock here???
 	struct in_addr sin_addr= {socketParam->clientAddr};
-	sleep(5);
+	if(socketParam->eventHandler != NULL) {
+		socketParam->eventHandler(param);
+	}
 	LOGD(
 			"[%s]event_handler closing %s:%d", SOCKETID2NAME(socketParam->soc_type), inet_ntoa(sin_addr), socketParam->clientPort);
 	pthread_cond_signal(cond);
+	pthread_mutex_unlock(socket_mutex);
 	return NULL;
 }

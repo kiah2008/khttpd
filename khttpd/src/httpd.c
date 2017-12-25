@@ -1,18 +1,3 @@
-/* J. David's webserver */
-/* This is a simple webserver.
- * Created November 1999 by J. David Blackstone.
- * CSE 4344 (Network concepts), Prof. Zeigler
- * University of Texas at Arlington
- */
-/* This program compiles for Sparc Solaris 2.6.
- * To compile for Linux:
- *  1) Comment out the #include <pthread.h> line.
- *  2) Comment out the line that defines the variable newthread.
- *  3) Comment out the two lines that run pthread_create().
- *  4) Uncomment the line that runs accept_request().
- *  5) Remove -lsocket from the Makefile.
- */
-
 /*
  * httpd.c
  *
@@ -36,8 +21,8 @@
 #include <log.h>
 #include <config.h>
 #include <ktypedef.h>
-
-#define LOG_TAG "khttpd"
+#include <kevent.h>
+#include <khandler.h>
 
 #define ISspace(x) isspace((int)(x))
 
@@ -78,9 +63,9 @@ void* accept_request(void* param) {
 
 	i = 0;
 	j = 0;
-	while (!ISspace(buf[j]) && (i < sizeof(method) - 1)) //С��method-1����Ϊ���һλҪ��\0
+	while (!ISspace(buf[j]) && (i < sizeof(method) - 1))
 	{
-		method[i] = buf[j]; //��ȡ���󷽷�����method
+		method[i] = buf[j];
 		i++;
 		j++;
 	}
@@ -560,9 +545,12 @@ int main(void) {
 
 	pthread_t newthread;
 	OPENLOG();
+	if(event_init(event_handler, event_handler)) {
+		LOGE("event init failed!");
+	}
+
 	listenfd = startListenSocket(&port);
 	LOGD("httpd running on port %d\n", port);
-
 	while (1) {
 		//loop waiting for client connection
 		connfd_sock = accept(listenfd, (struct sockaddr *) &client,
