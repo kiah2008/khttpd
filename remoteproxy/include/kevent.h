@@ -19,7 +19,7 @@ typedef struct SocketListenParam {
 	int port;
 	void* (*eventHandler)(void*);
     u_short clientPort;
-    int clientAddr;
+    int32_t clientAddr;
 } SocketListenParam;
 
 #define SOCKETID2NAME(id) (id== SOCKET_STAT?SOCK_STAT_NAME:SOCK_DATA_NAME)

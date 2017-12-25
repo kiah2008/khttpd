@@ -1,4 +1,5 @@
 BUILDDIRS := \
+    external/mxml-2.11 \
 	khttpd/ \
 	remoteproxy/ \
 	simpleclient/

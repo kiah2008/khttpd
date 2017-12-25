@@ -141,8 +141,8 @@ void* startEventLoop(void* param) {
 		LOGD(
 				"[%s]recv client %s:%d \n", SOCKETID2NAME(socketParam->soc_type), client_ip, ntohs(client.sin_port));
 		pthread_mutex_lock(socket_mutex);
-		socketParam->clientPort = client.sin_port;
-		socketParam->clientAddr = client.sin_addr;
+		socketParam->clientPort = ntohs(client.sin_port);
+		socketParam->clientAddr = client.sin_addr.s_addr;
 		pthread_mutex_unlock(socket_mutex);
 		if (pthread_create(&handlerThread, &attr, event_handler, param) != 0) {
 			LOGFATAL("pthread_create");
@@ -160,9 +160,10 @@ void* event_handler(void* param) {
 	SocketListenParam* socketParam = (SocketListenParam*) param;
 	pthread_cond_t* cond =
 			socketParam->soc_type == SOCKET_STAT ? &s_stat_cond : &s_data_cond;
+	struct in_addr sin_addr= {socketParam->clientAddr};
 	sleep(5);
 	LOGD(
-			"event_handler %s closing %s:%d", SOCKETID2NAME(socketParam->soc_type), inet_ntoa(socketParam->clientAddr), ntohs(socketParam->clientPort));
+			"[%s]event_handler closing %s:%d", SOCKETID2NAME(socketParam->soc_type), inet_ntoa(sin_addr), socketParam->clientPort);
 	pthread_cond_signal(cond);
 	return NULL;
 }
